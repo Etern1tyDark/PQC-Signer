@@ -20,7 +20,7 @@ interface SignProps {
 
 
 
-export default function SignDetatch({ keysData, pushToast }: SignProps) {
+export default function VerifyDetach({ keysData, pushToast }: SignProps) {
 
 
     const availableKeys = Object.keys(keysData)
@@ -32,43 +32,58 @@ export default function SignDetatch({ keysData, pushToast }: SignProps) {
     return(
         <div>
             <h1 className="text-3xl font-Akira">
-                Detached Signing
+                Detached Verification
             </h1>
 
             <Glass className="mt-3 p-3">
                 <h2 className="font-Space font-bold text-xl">
-                    Generate Key
+                    Verify a Manifest
                 </h2>
                 <p className="text-xs mt-1">
-                    Select a variant, decide whether to encrypt the secret key, and optionally overwrite an existing record
+                    Upload the original file plus a manifest JSON file or paste a manifest payload directly
+                    
                 </p>
 
-                <div className="flex items-center justify-center w-full mt-3">
-                    <FileDropzone 
-                            label="Upload File"
-                            file={signForm.file}
-                            onFileSelect={(file) => setSignForm(prev => ({ ...prev, file }))}
-                    />
+                <div className="flex gap-2.5">
+                    <div className="flex items-center justify-center w-full mt-3">
+                        <FileDropzone 
+                                label="Upload File"
+                                file={signForm.file}
+                                onFileSelect={(file) => setSignForm(prev => ({ ...prev, file }))}
+                        />
+                    </div>
+
                 </div>
 
                 <div className="sections-1">
                     <div className="mt-2">
-                        <h3>Signing Key</h3>
+                        <h3>Manual Key Override</h3>
 
-                        <CustomSelect 
-                            options={availableKeys.length > 0 ? availableKeys : ['No keys available']}
-                            value={signForm.keyId}
-                            onChange={(val) => setSignForm(prev => ({ ...prev, keyId: val }))}
+                        <input 
+                        className="inputs"
+                        type="text" 
+                        placeholder="Optional"
                         />
                     </div>
 
                     <div className="mt-3.5">
-                        <h3>Password</h3>
+                        <div className="flex justify-between items-center mb-1.5">
+                            <h3 >Manifest Payload</h3>
 
-                        <input 
-                        className="inputs"
-                        type="password" 
-                        placeholder="Only Required for encrypted keys"
+                            <button className="flex mr-3 items-center">
+                                <div className="mr-2">
+                                    <h3 className="bg-white rounded-lg py-1.5 px-3 text-black">FILE</h3>
+                                </div>
+                                
+                                <div>
+                                    <h3>PASTE</h3>
+                                </div>
+                            </button>
+                        </div>
+
+                        <textarea 
+                            className="inputarea" 
+                            placeholder='{"key_id":"team-key","algorithm":"ML-DSA-65",...}'
                         />
                     </div>
                 </div>
@@ -85,7 +100,7 @@ export default function SignDetatch({ keysData, pushToast }: SignProps) {
                     scale: busyAction ? 1 : 0.95
                 }}
                 >
-                    {busyAction ? 'Signing...' : 'Sign and Download Manifest'}
+                    {busyAction ? 'Verifying...' : 'Verify Manifest'}
                 </motion.button>
             </Glass>
         </div>

@@ -1,16 +1,17 @@
-'use client';
+'use client'
 
-import type { DragEvent, KeyboardEvent } from 'react';
-import { useRef, useState } from 'react';
+import type { DragEvent, KeyboardEvent } from 'react'
+import { useRef, useState } from 'react'
 
-import { formatBytes } from '@/lib/formatters';
-import { motion } from 'motion/react';
+import { formatBytes } from '@/lib/formatters'
+import { motion } from 'motion/react'
 
 interface FileDropzoneProps {
-  label: string;
-  file: File | null;
-  onFileSelect: (file: File | null) => void;
-  accept?: string;
+  label: string
+  file: File | null
+  onFileSelect: (file: File | null) => void
+  accept?: string
+  className?: string
 }
 
 export default function FileDropzone({
@@ -18,39 +19,39 @@ export default function FileDropzone({
   file,
   onFileSelect,
   accept = '*/*',
+  className
 }: FileDropzoneProps) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const [isOver, setIsOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const [isOver, setIsOver] = useState(false)
 
   function openFilePicker() {
     if (!inputRef.current) {
-      return;
+      return
     }
-    // Reset input so selecting the same file still triggers onChange.
-    inputRef.current.value = '';
-    inputRef.current.click();
+    inputRef.current.value = ''
+    inputRef.current.click()
   }
 
   function handleDrop(event: DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    setIsOver(false);
-    const nextFile = event.dataTransfer.files?.[0];
+    event.preventDefault()
+    setIsOver(false)
+    const nextFile = event.dataTransfer.files?.[0]
     if (nextFile) {
-      onFileSelect(nextFile);
+      onFileSelect(nextFile)
     }
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      openFilePicker();
+      event.preventDefault()
+      openFilePicker()
     }
   }
 
   return (
     <div className='w-full'>
       <div 
-        className={`flex flex-col items-center justify-center w-full h-64 border border-dashed cursor-pointer rounded-2xl group transition-all duration-200 ${
+        className={`flex flex-col items-center justify-center w-full ${className} border border-dashed cursor-pointer rounded-2xl group transition-all duration-200 ${
           isOver 
             ? 'bg-neutral-tertiary-medium border-white/50 scale-[1.02]'
             : 'bg-neutral-secondary-medium border-default-strong hover:bg-neutral-tertiary-medium'
@@ -58,8 +59,8 @@ export default function FileDropzone({
         onClick={openFilePicker}
         onDrop={handleDrop}
         onDragOver={(event) => {
-          event.preventDefault();
-          setIsOver(true);
+          event.preventDefault()
+          setIsOver(true)
         }}
         onDragLeave={() => setIsOver(false)}
         onKeyDown={handleKeyDown}
@@ -102,5 +103,5 @@ export default function FileDropzone({
         />
       </div>
     </div>
-  );
+  )
 }
