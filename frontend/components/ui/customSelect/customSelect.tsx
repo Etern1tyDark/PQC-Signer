@@ -51,7 +51,7 @@ export default function CustomSelect({ options, value, onChange, placeholder = "
                         transition={{ duration: 0.15 }}
                         className="absolute top-full mt-2 w-full bg-[#181818]/95 backdrop-blur-xl rounded-xl shadow-2xl overflow-hidden z-50"
                     >
-                        <div className="max-h-60 overflow-y-auto">
+                        <div className="max-h-45 overflow-y-auto">
                             {options.map((option) => (
                                 <div
                                     key={option}
