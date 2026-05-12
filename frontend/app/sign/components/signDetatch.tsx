@@ -41,10 +41,10 @@ export default function SignDetatch({ keysData, pushToast }: SignProps) {
 
             <Glass className="mt-3 p-3">
                 <h2 className="font-Space font-bold text-xl">
-                    Generate Key
+                    Sign a File
                 </h2>
                 <p className="text-xs mt-1">
-                    Select a variant, decide whether to encrypt the secret key, and optionally overwrite an existing record
+                    Sign raw file bytes and downloads a detached manifest JSON file
                 </p>
 
                 <div className="flex items-center justify-center w-full mt-3">

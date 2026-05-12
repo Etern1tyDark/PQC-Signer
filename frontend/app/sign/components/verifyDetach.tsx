@@ -69,11 +69,11 @@ export default function VerifyDetach({ keysData, pushToast }: SignProps) {
 
                             <button className="flex mr-3 items-center" >
                                 <div className="mr-2" onClick={() => setFilePayload(!FilePayload)}>
-                                    <h3 className={`rounded-lg py-1.5 px-3 text-black transition-colors duration-200 ${FilePayload ? 'bg-white text-black' : 'text-white hover:bg-white/30 '}`}>FILE</h3>
+                                    <h3 className={`rounded-lg py-1.5 px-3 cursor-pointer text-black transition-colors duration-200 ${FilePayload ? 'bg-white text-black' : 'text-white hover:bg-white/30 '}`}>FILE</h3>
                                 </div>
                                 
                                 <div onClick={() => setFilePayload(!FilePayload)}>
-                                    <h3 className={`rounded-lg py-1.5 px-3 text-black transition-colors duration-200 ${!FilePayload ? 'bg-white text-black' : 'text-white hover:bg-white/30 '}`}>PASTE</h3>
+                                    <h3 className={`rounded-lg py-1.5 px-3 cursor-pointer text-black transition-colors duration-200 ${!FilePayload ? 'bg-white text-black' : 'text-white hover:bg-white/30 '}`}>PASTE</h3>
                                 </div>
                             </button>
                         </div>
@@ -89,7 +89,7 @@ export default function VerifyDetach({ keysData, pushToast }: SignProps) {
                                         transition={{ duration: 0.2 }}
                                     >
                                         <FileDropzone 
-                                            className="mt-2"
+                                            className="mt-2 h-32"
                                             label="Upload Manifest"
                                             file={verifyForm.signatureFile}
                                             onFileSelect={(file) => setVerifyForm(prev => ({ ...prev, signatureFile: file }))}

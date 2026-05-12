@@ -72,7 +72,12 @@ export default function KeysCreate({supportedAlgorithms, defaultAlgorithm, onSuc
 
 
     return(
-        <motion.div className="h-full w-full border-amber-400">
+        <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }} 
+        className="h-full w-full"
+        >
             <h1 className="text-3xl font-Akira">
                 Keys Creation
             </h1>
