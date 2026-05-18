@@ -29,8 +29,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <ModeProvider>
           <TopBar />
 
-          <div className="absolute inset-0 z-0 bg-black">
-            {/* <HeroBackground /> */}
+          <div className="absolute inset-0 z-0 ">
+            <HeroBackground />
           </div>
           
           <main className="relative h-screen">
