@@ -29,10 +29,29 @@ export default function Result({ result, onClose }: ResultProps) {
           onClick={(e) => e.stopPropagation()}
           className={`relative w-full max-w-md overflow-hidden rounded-3xl border border-white/20 p-8 shadow-2xl ${
             isValid 
-              ? "bg-gradient-to-b from-green-900/40 to-black/90" 
-              : "bg-gradient-to-b from-red-900/40 to-black/90"
+              ? "bg-gradient-to-b to-black/80" 
+              : "bg-gradient-to-b to-black/80"
           }`}
         >
+          <button
+            onClick={onClose}
+            className="absolute right-4 top-4 rounded-full p-2 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+            aria-label="Close"
+          >
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
           <div className="flex flex-col items-center text-center">
             
             <div className={`mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 ${
@@ -97,15 +116,6 @@ export default function Result({ result, onClose }: ResultProps) {
                 </div>
               </div>
             )}
-
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={onClose}
-              className="mt-6 w-full rounded-xl bg-white py-3 font-bold text-black transition-colors hover:bg-gray-200"
-            >
-              Close
-            </motion.button>
           </div>
         </motion.div>
       </motion.div>

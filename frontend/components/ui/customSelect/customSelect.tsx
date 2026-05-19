@@ -29,7 +29,7 @@ export default function CustomSelect({ options, value, onChange, placeholder = "
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition-colors"
+                className="w-full flex items-center justify-between bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition-colors cursor-pointer"
             >
                 <span className={value ? "text-white" : "text-gray-400"}>
                     {value || placeholder}
