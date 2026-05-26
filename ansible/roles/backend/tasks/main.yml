@@ -1,0 +1,59 @@
+---
+- name: Ensure persistent storage directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_group }}"
+    mode: 0755
+  loop:
+    - /var/lib/q-sealnet/keys
+    - /var/lib/q-sealnet/signatures
+
+- name: Create backend .env for production settings
+  copy:
+    dest: "{{ backend_root }}/.env"
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_group }}"
+    mode: 0644
+    content: |
+      KEYS_STORAGE_DIR=/var/lib/q-sealnet/keys
+      SIGNATURES_STORAGE_DIR=/var/lib/q-sealnet/signatures
+      ML_DSA_DEFAULT_VARIANT=ML-DSA-65
+      LOG_LEVEL=INFO
+      MAX_UPLOAD_SIZE_MB=64
+      PBKDF2_ITERATIONS=100000
+
+- name: Install backend dependencies with uv sync
+  become: no
+  become_user: "{{ deploy_user }}"
+  command: uv sync
+  args:
+    chdir: "{{ backend_root }}"
+  environment:
+    PATH: "/home/{{ deploy_user }}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+- name: Install gunicorn in uv environment
+  become: no
+  become_user: "{{ deploy_user }}"
+  command: uv pip install gunicorn
+  args:
+    chdir: "{{ backend_root }}"
+  environment:
+    PATH: "/home/{{ deploy_user }}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+- name: Deploy backend systemd service
+  template:
+    src: q-sealnet-backend.service.j2
+    dest: /etc/systemd/system/q-sealnet-backend.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart backend
+
+- name: Enable and start backend service
+  systemd:
+    name: q-sealnet-backend
+    enabled: yes
+    state: started
+    daemon_reload: yes

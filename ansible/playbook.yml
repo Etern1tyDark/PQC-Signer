@@ -1,0 +1,79 @@
+---
+- name: Deploy Q-SealNet backend (Flask API on VPS)
+  hosts: q-sealnet-vps
+  become: yes
+  gather_facts: yes
+
+  vars:
+    deploy_user: amoes_noland
+    deploy_group: amoes_noland
+    project_root: /opt/q-sealnet
+    backend_root: "{{ project_root }}/backend"
+    flask_port: 5000
+
+  pre_tasks:
+    - name: Ensure project root exists
+      file:
+        path: "{{ project_root }}"
+        state: directory
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_group }}"
+        mode: 0755
+
+    - name: Create project tarball on controller
+      command:
+        argv:
+          - tar
+          - czf
+          - /tmp/q-sealnet-deploy.tar.gz
+          - --exclude=.git
+          - --exclude=node_modules
+          - --exclude=.next
+          - --exclude=__pycache__
+          - --exclude=.venv
+          - --exclude=*.py[cod]
+          - --exclude=.pytest_cache
+          - --exclude=ansible
+          - --exclude=frontend
+          - -C
+          - "{{ playbook_dir }}/../"
+          - .
+      delegate_to: localhost
+      run_once: true
+      become: no
+
+    - name: Copy tarball to remote
+      copy:
+        src: /tmp/q-sealnet-deploy.tar.gz
+        dest: /tmp/q-sealnet-deploy.tar.gz
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_group }}"
+        mode: 0644
+
+    - name: Extract tarball on remote
+      command:
+        argv:
+          - tar
+          - xzf
+          - /tmp/q-sealnet-deploy.tar.gz
+          - -C
+          - "{{ project_root }}/"
+      become: no
+      become_user: "{{ deploy_user }}"
+
+    - name: Clean up remote tarball
+      file:
+        path: /tmp/q-sealnet-deploy.tar.gz
+        state: absent
+
+    - name: Clean up local tarball
+      file:
+        path: /tmp/q-sealnet-deploy.tar.gz
+        state: absent
+      delegate_to: localhost
+      become: no
+
+  roles:
+    - common
+    - backend
+    - nginx
