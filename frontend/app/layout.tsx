@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
-import { IBM_Plex_Mono, Space_Grotesk } from 'next/font/google'
+import { Space_Grotesk } from 'next/font/google'
 import type { ReactNode } from 'react'
 
 // @ts-ignore
 import './globals.css'
-import NavBar from '@/components/ui/navbar/navBar'
-import TopBar from '@/components/ui/navbar/topBar'
 import HeroBackground from '@/components/background/heroBg'
 import { ToastProvider } from '@/components/hooks/pushToast'
 import { ModeProvider } from '@/components/ui/context/modeContext'
+import { AuthProvider } from '@/components/ui/context/authContext'
+import Shell from '@/components/ui/shell'
 
 const displayFont = Space_Grotesk({
   subsets: ['latin'],
@@ -24,23 +24,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" >
+    <html lang="en">
       <body className={`text-white antialiased`}>
-        <ModeProvider>
-          <TopBar />
+        <ToastProvider>
+          <AuthProvider>
+            <ModeProvider>
+              <div className="fixed inset-0 z-0">
+                <HeroBackground />
+              </div>
 
-          <div className="absolute inset-0 z-0 ">
-            <HeroBackground />
-          </div>
-          
-          <main className="relative h-screen">
-            <ToastProvider>
-              {children}
-            </ToastProvider>
-          </main>
-
-          <NavBar />
-        </ModeProvider>
+              <Shell>{children}</Shell>
+            </ModeProvider>
+          </AuthProvider>
+        </ToastProvider>
       </body>
     </html>
   )

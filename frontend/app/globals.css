@@ -47,7 +47,7 @@
 
 @layer components {
   .pages {
-    @apply h-full w-full flex items-center
+    @apply w-full flex min-h-screen md:h-full md:items-center px-2 md:px-0 pt-24 md:pt-0 pb-32 md:pb-0
   }
   .keysGrid {
     @apply text-white mx-3 mt-2
@@ -69,7 +69,7 @@
   }
 
   .sections-2 {
-    @apply mt-3 grid grid-cols-2
+    @apply mt-3 grid grid-cols-1 sm:grid-cols-2
   }
 
   .checkmarks {

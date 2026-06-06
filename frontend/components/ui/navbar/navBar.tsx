@@ -59,7 +59,7 @@ export default function NavBar() {
 
                         return(
                             <Link key={index} href={hrefPath}>
-                                <motion.li variants={itemVariants} className={`relative px-6 py-3.5 rounded-full transition-colors duration-300 z-10 ${isActive ? "text-black" : "text-black/60 hover:text-black"}`}>
+                                <motion.li variants={itemVariants} className={`relative px-5 sm:px-6 py-3 sm:py-3.5 rounded-full transition-colors duration-300 z-10 ${isActive ? "text-black" : "text-black/60 hover:text-black"}`}>
                                     
                                     {isActive && (
                                         <motion.div layoutId="active-nav" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 bg-white rounded-full shadow-sm -z-10" transition={{ type: "spring", stiffness: 350, damping: 25 }} />
