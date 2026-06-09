@@ -47,7 +47,7 @@ export default function SideKeys({ type, pushToast }: SideKeysProps) {
             </div>
 
             <Glass className='p-3'>
-                <div className="w-4/5">
+                <div className="w-full md:w-4/5">
                     {type === 'vault' && (
                         <Vault 
                             keysData={keys} 

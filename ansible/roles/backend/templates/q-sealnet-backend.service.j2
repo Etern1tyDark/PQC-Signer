@@ -1,0 +1,21 @@
+[Unit]
+Description=Q-SealNet Flask Backend (ML-DSA Signing Service)
+After=network.target
+
+[Service]
+Type=simple
+User={{ deploy_user }}
+Group={{ deploy_group }}
+WorkingDirectory={{ backend_root }}
+EnvironmentFile={{ backend_root }}/.env
+ExecStart=/home/{{ deploy_user }}/.local/bin/uv run gunicorn -w 2 -b 127.0.0.1:{{ flask_port }} --access-logfile - --error-logfile - main:app
+Restart=always
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

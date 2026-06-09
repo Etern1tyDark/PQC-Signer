@@ -1,0 +1,33 @@
+---
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Remove default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: restart nginx
+
+- name: Deploy Q-SealNet nginx config
+  template:
+    src: q-sealnet.nginx.conf.j2
+    dest: /etc/nginx/sites-available/q-sealnet
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart nginx
+
+- name: Enable Q-SealNet site
+  file:
+    src: /etc/nginx/sites-available/q-sealnet
+    dest: /etc/nginx/sites-enabled/q-sealnet
+    state: link
+  notify: restart nginx
+
+- name: Ensure nginx is running
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started

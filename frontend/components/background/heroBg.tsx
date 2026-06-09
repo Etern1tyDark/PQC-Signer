@@ -13,7 +13,7 @@ export default function HeroBackground() {
             transition={{ duration: 10, ease: "easeInOut" }} 
             className="absolute inset-0 z-1 bg-black pointer-events-none" 
             />
-            <ShaderGradientCanvas>
+            <ShaderGradientCanvas fov={45} pixelDensity={1}>
                 <ShaderGradient
                     animate="on"
                     brightness={0.8}
@@ -25,13 +25,8 @@ export default function HeroBackground() {
                     color2="#ff810a"
                     color3="#8da0ce"
                     envPreset="city"
-                    format="canvas"
-                    fov={45}
-                    frameRate={6}
-                    gizmoHelper="hide"
                     grain="on"
                     lightType="env"
-                    pixelDensity={1}
                     positionX={-0.1}
                     positionY={0}
                     positionZ={0}

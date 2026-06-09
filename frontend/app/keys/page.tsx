@@ -1,49 +1,28 @@
 'use client'
-import { RiExportFill, RiSafe3Fill } from "react-icons/ri"
 import KeysCreate from "./components/keysCreate"
 import KeysImport from "./components/keysImport"
-import SideKeys from "./components/sideKeys"
-import { motion, AnimatePresence, Variants } from "motion/react" 
-import { useState } from "react"
+import { motion } from "motion/react"
 import { useToast } from "@/components/hooks/pushToast"
 import { useServerInfo } from "@/components/hooks/serverCheck"
-import { AiFillSignature } from "react-icons/ai"
+import ToolRail from "@/components/ui/toolRail"
 
 
 export default function KeyPage() {
     const { pushToast } = useToast()
     const { serverInfo, refreshData } = useServerInfo()
 
-    const [sideActive, setSideActive] = useState(false)
-    const [type, setType] = useState('')
-
     const supportedAlgorithms = serverInfo?.security_features?.supported_signature_algorithms || [
         'ML-DSA-44', 'ML-DSA-65', 'ML-DSA-87'
     ]
     const defaultAlgorithm = serverInfo?.security_features?.default_signature_algorithm || 'ML-DSA-44'
 
-    function handleSideKey(hoverTarget: string) {
-        if (type === hoverTarget && sideActive) {
-            setSideActive(false)
-            setType('')
-            return
-        }
-        setType(hoverTarget)
-        setSideActive(true)
-    }
-
-    const iconAnimation: Variants = {
-        hover: { scale: 1.1, y: -2, transition: { type: "spring", stiffness: 400, damping: 10 } },
-        tap: { scale: 0.85 }
-    }
-
     return(
         <div id="Keys" className="pages">
-            <div className="flex w-full items-center">
-                <div className="flex w-full ml-6">
+            <div className="flex flex-col md:flex-row w-full md:items-center gap-4 md:gap-0">
+                <div className="flex flex-col md:flex-row w-full md:ml-6 gap-4 md:gap-0">
                     <motion.div layout className="flex-auto">
                         <div className="keysGrid">
-                            <KeysCreate 
+                            <KeysCreate
                                 supportedAlgorithms={supportedAlgorithms}
                                 defaultAlgorithm={defaultAlgorithm}
                                 onSuccess={refreshData}
@@ -52,73 +31,17 @@ export default function KeyPage() {
                         </div>
                     </motion.div>
 
-                    <motion.div layout className="flex-auto mr-3">
-                        <div className="keysGrid ">
-                            <KeysImport 
+                    <motion.div layout className="flex-auto md:mr-3">
+                        <div className="keysGrid">
+                            <KeysImport
                                 onSuccess={refreshData}
                                 pushToast={pushToast}
                             />
                         </div>
                     </motion.div>
 
-                    <div className="flex items-center">
-                        <div className="flex">
-                            <div className="w-14 flex flex-col p-2 border-l border-y border-white bg-white/20 rounded-l-xl">
-                                <motion.div 
-                                    className={`icons cursor-pointer ${type === 'vault' ? 'icons-active' : 'text-gray-400 hover:text-white'}`} 
-                                    onClick={() => handleSideKey('vault')}
-                                    variants={iconAnimation}
-                                    whileHover="hover"
-                                    whileTap="tap"
-                                >
-                                    <RiSafe3Fill />
-                                </motion.div>
-                                <motion.div 
-                                    className={`icons cursor-pointer ${type === 'export' ? 'icons-active' : 'text-gray-400 hover:text-white'}`} 
-                                    onClick={() => handleSideKey('export')}
-                                    variants={iconAnimation}
-                                    whileHover="hover"
-                                    whileTap="tap"
-                                >
-                                    <RiExportFill />
-                                </motion.div>
-                                <motion.div 
-                                    className={`icons cursor-pointer ${type === 'history' ? 'icons-active' : 'text-gray-400 hover:text-white'}`} 
-                                    onClick={() => handleSideKey('history')}
-                                    variants={iconAnimation}
-                                    whileHover="hover"
-                                    whileTap="tap"
-                                >
-                                    <AiFillSignature />
-                                </motion.div>
-                            </div>
-                        </div>
-                    </div>
+                    <ToolRail pushToast={pushToast} />
                 </div>
-
-                <AnimatePresence>
-                    {sideActive && (
-                        <motion.div
-                            initial={{ width: "0%", opacity: 1 }}
-                            animate={{ 
-                                width: "27.5%", 
-                                opacity: 1,
-                                transition: { type: "spring", bounce: 0.35, duration: 0.6 } 
-                            }}
-                            exit={{ 
-                                width: 0, 
-                                opacity: 1,
-                                transition: { type: "tween", ease: "easeOut", duration: 0.2 }
-                            }}
-                            className="h-full overflow-hidden shrink-0"
-                        >
-                            <div className="w-[35vw] h-full mt-2">
-                                <SideKeys type={type} pushToast={pushToast} />
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
             </div>
         </div>
     )

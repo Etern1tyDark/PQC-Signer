@@ -1,0 +1,24 @@
+upstream q-sealnet-backend {
+    server 127.0.0.1:{{ flask_port }};
+}
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name api.qsealnet.wintertia.qzz.io api.wintertia.qzz.io;
+
+    client_max_body_size 128M;
+
+    gzip on;
+    gzip_types application/json text/plain;
+    gzip_min_length 256;
+
+    location / {
+        proxy_pass http://q-sealnet-backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 90s;
+    }
+}

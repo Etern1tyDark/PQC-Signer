@@ -1,5 +1,22 @@
 export type ToastType = 'success' | 'warning' | 'error'
 
+export interface AuthUser {
+  username: string
+  email: string
+  created_at?: string
+}
+
+export interface AuthResponse {
+  success: boolean
+  token: string
+  user: AuthUser
+}
+
+export interface MeResponse {
+  success: boolean
+  user: AuthUser
+}
+
 export interface VariantProfile {
   public_key_size: number
   private_key_size: number
