@@ -6,6 +6,8 @@ import { motion } from "motion/react"
 import AuthHeader from "@/components/ui/auth/authHeader"
 import { useAuth } from "@/components/ui/context/authContext"
 import { useToast } from "@/components/hooks/pushToast"
+import Glass from "@/components/ui/glassmorphism/glassMorph"
+import TopBar from "@/components/ui/navbar/topBar"
 
 function LoginForm() {
     const { login, status } = useAuth()
@@ -47,15 +49,15 @@ function LoginForm() {
 
     return (
         <div className="relative z-10 min-h-screen w-full flex items-center justify-center px-4 py-24">
+            
             <motion.div
                 initial={{ opacity: 0, y: 24, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className="w-full max-w-md sm:max-w-lg font-Space bg-white/5 backdrop-blur-2xl border border-white/15 rounded-3xl shadow-2xl p-6 sm:p-9"
             >
-                <h1 className="font-Space font-bold text-4xl sm:text-5xl mb-6 sm:mb-8">Login</h1>
-
-                <form onSubmit={handleSubmit} className="flex flex-col">
+                <h1>Login</h1>
+                <Glass className="mt-3 p-3">
+                <form onSubmit={handleSubmit} className="flex flex-col p-2.5">
                     <label className="block">
                         <span className="text-sm font-bold">Username/Email</span>
                         <input
@@ -98,6 +100,7 @@ function LoginForm() {
                         {busy ? 'Signing in…' : 'Continue'}
                     </motion.button>
                 </form>
+                </Glass>
             </motion.div>
         </div>
     )

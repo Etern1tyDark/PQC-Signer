@@ -7,7 +7,6 @@ import { FiLogOut } from "react-icons/fi"
 import { useMode } from "../context/modeContext"
 import { useAuth } from "../context/authContext"
 
-// The detached/embedded toggle only matters on the signing surfaces.
 const MODE_ROUTES = ['/sign', '/verify']
 
 export default function TopBar() {
@@ -51,7 +50,7 @@ export default function TopBar() {
                         >
                             <div className="flex items-center gap-1.5">
                                 <span className="hidden sm:inline">Mode:</span>
-                                <div className="relative w-[72px] sm:w-[88px] h-[24px] flex items-center overflow-hidden">
+                                <div className="relative w-[72px] sm:w-[72px] h-[24px] flex items-center overflow-hidden">
                                     <AnimatePresence mode="popLayout">
                                         <motion.span
                                             key={isDetached ? 'detached' : 'embedded'}
@@ -75,6 +74,18 @@ export default function TopBar() {
                                 <CgArrowsExchange size={24} />
                             </motion.div>
                         </motion.button>
+                    )}
+
+                    {status === 'unauthenticated' && (
+                        <Link href='/login' className="shrink-0">
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="bg-white hover:bg-white/90 text-black/95 transition-colors py-1.5 px-4 sm:px-5 rounded-3xl text-sm sm:text-xl cursor-pointer border-2 border-white shadow-sm font-bold flex items-center gap-2"
+                        >
+                            Login
+                        </motion.button>
+                        </Link>
                     )}
 
                     {status === 'authenticated' && user && (

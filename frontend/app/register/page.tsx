@@ -6,6 +6,7 @@ import { motion } from "motion/react"
 import AuthHeader from "@/components/ui/auth/authHeader"
 import { useAuth } from "@/components/ui/context/authContext"
 import { useToast } from "@/components/hooks/pushToast"
+import Glass from "@/components/ui/glassmorphism/glassMorph"
 
 function RegisterForm() {
     const { register, status } = useAuth()
@@ -54,11 +55,10 @@ function RegisterForm() {
                 initial={{ opacity: 0, y: 24, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className="w-full max-w-md sm:max-w-lg font-Space bg-white/5 backdrop-blur-2xl border border-white/15 rounded-3xl shadow-2xl p-6 sm:p-9"
             >
-                <h1 className="font-Space font-bold text-4xl sm:text-5xl mb-6 sm:mb-8">Register</h1>
-
-                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                <h1>Register</h1>
+                <Glass className="mt-3 p-3">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-4">
                     <label className="block">
                         <span className="text-sm font-bold">Email</span>
                         <input
@@ -112,6 +112,7 @@ function RegisterForm() {
                         </Link>
                     </p>
                 </form>
+                </Glass>
             </motion.div>
         </div>
     )

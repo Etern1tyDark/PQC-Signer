@@ -7,18 +7,14 @@ import { useEffect, useState } from 'react';
 
 const items = ["Keys", "Sign", "Verify"];
 
+let _navHasAnimated = false;
+
 export default function NavBar() {
     const pathname = usePathname();
-    const [isFirstLoad, setIsFirstLoad] = useState(true);
+    const [isFirstLoad] = useState(!_navHasAnimated);
 
     useEffect(() => {
-        const hasAnimated = sessionStorage.getItem('navAnimated');
-        
-        if (hasAnimated) {
-            setIsFirstLoad(false);
-        } else {
-            sessionStorage.setItem('navAnimated', 'true');
-        }
+        _navHasAnimated = true;
     }, []);
 
     const navContainerVariants: Variants = {

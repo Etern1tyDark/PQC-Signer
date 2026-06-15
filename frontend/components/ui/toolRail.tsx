@@ -56,7 +56,6 @@ export default function ToolRail({ pushToast }: ToolRailProps) {
         </motion.div>
     ))
 
-    // --- Mobile: horizontal rail + full-screen bottom-sheet overlay ---
     if (!isDesktop) {
         return (
             <>
