@@ -204,6 +204,32 @@ Return service health and object counts.
 
 The CLI talks to the backend HTTP API.
 
+### Authentication
+
+The signing API is gated, so you must authenticate before any other command
+will work. Log in or register first; the CLI stores the returned bearer token
+and attaches it automatically to every subsequent request.
+
+```bash
+python cli.py register --username alice --email alice@example.com   # prompts for password
+python cli.py login --identifier alice                              # username or email; prompts for password
+python cli.py whoami                                                # show the current account
+python cli.py logout                                                # remove the stored token
+```
+
+Each command also accepts its credentials inline (e.g.
+`login --identifier alice --password secret8`); omit a flag to be prompted
+securely. Running a gated command without a token prints
+`Authentication required (run 'login' or 'register' first)`.
+
+Tokens are stored per backend URL in `~/.qsealnet/credentials.json` (override
+the location with `QSEALNET_CREDENTIALS_FILE`). The `QSEALNET_TOKEN`
+environment variable takes precedence over the stored file, which is handy for
+CI. `logout` only clears the local token and works even when the server is
+down.
+
+### Signing workflows
+
 ```bash
 python cli.py --base-url http://localhost:5000 list-keys
 python cli.py generate-key release-signing --algorithm ML-DSA-65

@@ -14,31 +14,137 @@ DEFAULT_BASE_URL = os.getenv("QSEALNET_API_BASE_URL", "http://localhost:5000")
 SUPPORTED_ALGORITHMS = ["ML-DSA-44", "ML-DSA-65", "ML-DSA-87"]
 REQUEST_TIMEOUT = 10
 
+CREDENTIALS_PATH = Path(
+    os.getenv("QSEALNET_CREDENTIALS_FILE") or (Path.home() / ".qsealnet" / "credentials.json")
+)
+
+
+def _load_credentials():
+    try:
+        data = json.loads(CREDENTIALS_PATH.read_text())
+        return data if isinstance(data, dict) else {}
+    except (FileNotFoundError, ValueError):
+        return {}
+
+
+def load_token(base_url):
+    """Return the bearer token for base_url, preferring the QSEALNET_TOKEN env var."""
+    env_token = os.getenv("QSEALNET_TOKEN")
+    if env_token:
+        return env_token.strip()
+    return _load_credentials().get(base_url)
+
+
+def save_token(base_url, token):
+    credentials = _load_credentials()
+    credentials[base_url] = token
+    CREDENTIALS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    CREDENTIALS_PATH.write_text(json.dumps(credentials, indent=2))
+    try:
+        os.chmod(CREDENTIALS_PATH, 0o600)
+    except OSError:
+        pass
+
+
+def clear_token(base_url):
+    credentials = _load_credentials()
+    removed = credentials.pop(base_url, None) is not None
+    if removed:
+        CREDENTIALS_PATH.write_text(json.dumps(credentials, indent=2))
+    return removed
+
+
+def auth_headers(base_url):
+    token = load_token(base_url)
+    return {"Authorization": f"Bearer {token}"} if token else {}
+
+
+def _error_message(response):
+    try:
+        payload = response.json()
+        message = payload.get("error") or payload.get("message") or response.text
+    except ValueError:
+        message = response.text or response.reason
+    if response.status_code == 401:
+        message = f"{message} (run 'login' or 'register' first)"
+    return message
+
 
 def request_json(base_url, method, path, **kwargs):
-    response = requests.request(method, f"{base_url}{path}", timeout=REQUEST_TIMEOUT, **kwargs)
+    headers = {**auth_headers(base_url), **kwargs.pop("headers", {})}
+    response = requests.request(
+        method, f"{base_url}{path}", timeout=REQUEST_TIMEOUT, headers=headers, **kwargs
+    )
     if not response.ok:
-        try:
-            payload = response.json()
-            message = payload.get("error") or payload.get("message") or response.text
-        except ValueError:
-            message = response.text or response.reason
-        raise RuntimeError(message)
+        raise RuntimeError(_error_message(response))
     if not response.content:
         return {}
     return response.json()
 
 
 def request_binary(base_url, path, **kwargs):
-    response = requests.post(f"{base_url}{path}", timeout=REQUEST_TIMEOUT, **kwargs)
+    headers = {**auth_headers(base_url), **kwargs.pop("headers", {})}
+    response = requests.post(
+        f"{base_url}{path}", timeout=REQUEST_TIMEOUT, headers=headers, **kwargs
+    )
     if not response.ok:
-        try:
-            payload = response.json()
-            message = payload.get("error") or payload.get("message") or response.text
-        except ValueError:
-            message = response.text or response.reason
-        raise RuntimeError(message)
+        raise RuntimeError(_error_message(response))
     return response.content
+
+
+def register_user(base_url, username=None, email=None, password=None):
+    username = username or input("Username: ").strip()
+    email = email or input("Email: ").strip()
+    if password is None:
+        password = getpass.getpass("Password: ")
+        if password != getpass.getpass("Confirm password: "):
+            print("Passwords do not match")
+            return False
+
+    result = request_json(
+        base_url,
+        "POST",
+        "/auth/register",
+        json={"username": username, "email": email, "password": password},
+    )
+    save_token(base_url, result["token"])
+    print(f"Registered and logged in as '{result['user']['username']}'")
+    print(f"Token saved to: {CREDENTIALS_PATH}")
+    return True
+
+
+def login_user(base_url, identifier=None, password=None):
+    identifier = identifier or input("Username or email: ").strip()
+    if password is None:
+        password = getpass.getpass("Password: ")
+
+    result = request_json(
+        base_url,
+        "POST",
+        "/auth/login",
+        json={"identifier": identifier, "password": password},
+    )
+    save_token(base_url, result["token"])
+    print(f"Logged in as '{result['user']['username']}'")
+    print(f"Token saved to: {CREDENTIALS_PATH}")
+    return True
+
+
+def logout_user(base_url):
+    if clear_token(base_url):
+        print(f"Logged out from {base_url}")
+    else:
+        print("No stored credentials for this server")
+    return True
+
+
+def whoami(base_url):
+    user = request_json(base_url, "GET", "/auth/me")["user"]
+    print(f"Logged in as '{user['username']}'")
+    print(f"Email: {user['email']}")
+    if user.get("created_at"):
+        print(f"Member since: {user['created_at']}")
+    return True
 
 
 def check_server(base_url):
@@ -294,6 +400,26 @@ def build_parser():
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
+    register_parser = subparsers.add_parser(
+        "register", help="Create an account and store the auth token"
+    )
+    register_parser.add_argument("--username", help="Account username (prompts if omitted)")
+    register_parser.add_argument("--email", help="Account email (prompts if omitted)")
+    register_parser.add_argument(
+        "--password", help="Account password (prompts securely if omitted)"
+    )
+
+    login_parser = subparsers.add_parser("login", help="Log in and store the auth token")
+    login_parser.add_argument(
+        "--identifier", help="Username or email (prompts if omitted)"
+    )
+    login_parser.add_argument(
+        "--password", help="Account password (prompts securely if omitted)"
+    )
+
+    subparsers.add_parser("logout", help="Remove the stored auth token for this server")
+    subparsers.add_parser("whoami", help="Show the currently authenticated user")
+
     gen_parser = subparsers.add_parser("generate-key", help="Generate a new key pair")
     gen_parser.add_argument("key_id", help="Unique identifier for the key")
     gen_parser.add_argument(
@@ -362,13 +488,23 @@ def main():
         parser.print_help()
         return
 
-    if not check_server(args.base_url):
+    if args.command != "logout" and not check_server(args.base_url):
         print("Server is not running. Start the backend with:")
         print("  cd backend && uv run main.py")
         sys.exit(1)
 
     try:
-        if args.command == "generate-key":
+        if args.command == "register":
+            success = register_user(
+                args.base_url, args.username, args.email, args.password
+            )
+        elif args.command == "login":
+            success = login_user(args.base_url, args.identifier, args.password)
+        elif args.command == "logout":
+            success = logout_user(args.base_url)
+        elif args.command == "whoami":
+            success = whoami(args.base_url)
+        elif args.command == "generate-key":
             success = generate_key(
                 args.base_url,
                 args.key_id,
