@@ -1,44 +1,104 @@
 @import "tailwindcss";
 
-:root {
-  --bg: #f4efe6;
-  --ink: #18201d;
-  --muted: #54615a;
-  --accent: #d66b2d;
-  --accent-strong: #b14d16;
-  --success: #1f7a5b;
-  --warning: #b56d10;
+
+@layer base {
+    *,
+    *::before,
+    *::after {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        scrollbar-color: #ada5a5 transparent;
+    }
+
+    * {
+        scrollbar-width: 6px;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #333333;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555555;
+    }
 }
 
-html {
-  min-height: 100%;
-  background:
-    radial-gradient(circle at top left, rgba(214, 107, 45, 0.2), transparent 32%),
-    radial-gradient(circle at top right, rgba(31, 122, 91, 0.16), transparent 28%),
-    linear-gradient(180deg, #f7f3eb 0%, #ede1cc 100%);
+@layer base {
+  h1 {
+    @apply text-3xl font-Akira
+  }
+  h2 {
+    @apply font-Space font-bold text-xl
+  }
+  h3 {
+    @apply text-sm font-bold font-Space
+  }
 }
 
-body {
-  min-height: 100vh;
-  margin: 0;
-  color: var(--ink);
-  background:
-    radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.72), transparent 22%),
-    radial-gradient(circle at 90% 8%, rgba(255, 248, 238, 0.55), transparent 24%);
-  font-family: var(--font-display), sans-serif;
+@layer components {
+  .pages {
+    @apply w-full flex min-h-screen md:h-full md:items-center px-2 md:px-0 pt-24 md:pt-0 pb-32 md:pb-0
+  }
+  .keysGrid {
+    @apply text-white mx-3 mt-2
+  }
+  .inputs {
+    @apply w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white transition-colors text-white placeholder-gray-400 mt-2
+  }
+
+  .inputarea {
+    @apply bg-white/5 border border-white/20 w-full h-16 rounded-xl mt-1.5 pl-3 focus:outline-none focus:border-white transition-colors text-white placeholder-gray-400 py-2 resize-none font-mono text-sm
+  }
+
+  .selections {
+    @apply bg-amber-200/10 w-full h-9 rounded-xl mt-1.5 px-3 uppercase
+  }
+
+  .sections-1 {
+    @apply mt-3 grid grid-cols-1
+  }
+
+  .sections-2 {
+    @apply mt-3 grid grid-cols-1 sm:grid-cols-2
+  }
+
+  .checkmarks {
+    @apply w-4 h-4 appearance-none border border-gray-400 rounded-sm bg-transparent cursor-pointer  checked:bg-blue-500 checked:border-blue-500 transition-all relative checked:after:content-[''] checked:after:absolute checked:after:left-[4px] checked:after:top-[1px] checked:after:w-[5px] checked:after:h-[9px] checked:after:border-r-2 checked:after:border-b-2  checked:after:border-white checked:after:rotate-45
+  }
+
+  .glassmorphism {
+    @apply font-Space bg-white/10 rounded-lg border-1 border-white
+  }
+
+  .icons {
+    @apply p-2 my-1.5 text-2xl rounded-lg flex justify-center
+  }
+
+  .icons-active {
+    @apply bg-white/20 text-white
+  }
 }
 
-* {
-  box-sizing: border-box;
+
+@font-face {
+    font-family: 'Akira';
+    src: url('../static/Akira/Akira\ Expanded\ Demo.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
 }
 
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-
-::selection {
-  background: rgba(214, 107, 45, 0.18);
+@theme {
+  --font-Akira: Akira, "sans-serif";
+  --font-Space: "Space Grotesk", "sans-serif";
 }

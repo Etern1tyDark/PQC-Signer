@@ -47,6 +47,43 @@ def parse_json_request():
 
 
 @dataclass(frozen=True)
+class RegisterRequest:
+    username: str
+    email: str
+    password: str
+
+    @classmethod
+    def from_request(cls):
+        payload = parse_json_request()
+        return cls(
+            username=_required_string(payload, "username"),
+            email=_required_string(payload, "email"),
+            password=_required_string(payload, "password"),
+        )
+
+
+@dataclass(frozen=True)
+class LoginRequest:
+    identifier: str
+    password: str
+
+    @classmethod
+    def from_request(cls):
+        payload = parse_json_request()
+        identifier = (
+            _optional_string(payload, "identifier")
+            or _optional_string(payload, "username")
+            or _optional_string(payload, "email")
+        )
+        if not identifier:
+            raise ValidationError("username or email required")
+        return cls(
+            identifier=identifier,
+            password=_required_string(payload, "password"),
+        )
+
+
+@dataclass(frozen=True)
 class GenerateKeyRequest:
     key_id: str
     password: str | None

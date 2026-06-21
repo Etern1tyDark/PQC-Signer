@@ -1,0 +1,5 @@
+name = "q-sealnet-frontend"
+compatibility_date = "2025-05-26"
+
+# Cloudflare Pages build output (Next.js static export)
+pages_build_output_dir = "out"

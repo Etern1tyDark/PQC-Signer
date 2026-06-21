@@ -1,0 +1,65 @@
+---
+- name: Install system dependencies
+  apt:
+    name:
+      - curl
+      - git
+      - build-essential
+      - python3
+      - python3-dev
+      - acl
+      - rsync
+    state: present
+    update_cache: yes
+
+- name: Install Node.js (NodeSource setup)
+  block:
+    - name: Download NodeSource setup script
+      get_url:
+        url: https://deb.nodesource.com/setup_22.x
+        dest: /tmp/nodesource_setup.sh
+        mode: 0755
+
+    - name: Run NodeSource setup
+      command: /tmp/nodesource_setup.sh
+      args:
+        creates: /etc/apt/sources.list.d/nodesource.list
+
+    - name: Install Node.js
+      apt:
+        name: nodejs
+        state: present
+        update_cache: yes
+
+- name: Install uv (if not present)
+  become: no
+  become_user: "{{ deploy_user }}"
+  block:
+    - name: Check if uv is already installed
+      command: which uv
+      register: uv_check
+      failed_when: false
+      changed_when: false
+
+    - name: Install uv via official script
+      when: uv_check.rc != 0
+      shell: >
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+      args:
+        creates: "/home/{{ deploy_user }}/.local/bin/uv"
+
+    - name: Ensure uv is in PATH for this user
+      when: uv_check.rc != 0
+      become: no
+      become_user: "{{ deploy_user }}"
+      lineinfile:
+        path: "/home/{{ deploy_user }}/.bashrc"
+        line: 'export PATH="$HOME/.local/bin:$PATH"'
+        regexp: '\.local/bin'
+        create: yes
+
+- name: Install pnpm globally via npm
+  npm:
+    name: pnpm
+    global: yes
+    state: present

@@ -121,6 +121,31 @@ Patched binaries append an embedded block that wraps the same manifest.
 
 ## API Overview
 
+### Authentication
+
+User accounts gate the signing API. Register or log in to receive a bearer
+token, then send it as `Authorization: Bearer <token>` on every resource
+request. Tokens are signed with `itsdangerous` using `QSEALNET_SECRET_KEY` and
+expire after `SESSION_MAX_AGE_SECONDS` (default 7 days). Passwords are stored as
+PBKDF2-SHA256 hashes; user records live in the `users/` storage directory.
+
+The auth endpoints (`/auth/*`), `/` and `/health` are public; all other
+endpoints below return `401` without a valid token.
+
+#### `POST /auth/register`
+
+Create an account. Body: `{ "username", "email", "password" }` (password ≥ 8
+chars). Returns `{ "token", "user" }`.
+
+#### `POST /auth/login`
+
+Authenticate with `{ "identifier", "password" }` where `identifier` is a
+username or email. Returns `{ "token", "user" }`.
+
+#### `GET /auth/me`
+
+Return the current user for the supplied bearer token.
+
 ### `POST /generate-keys`
 
 Create a new ML-DSA key pair.
